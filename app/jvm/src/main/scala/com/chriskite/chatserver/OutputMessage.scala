@@ -1,4 +1,6 @@
-package com.martinsnyder.chatserver
+package com.chriskite.chatserver
+
+import appbuildinfo.BuildInfo
 
 /*
  * Trait for any message that can be sent downstream to one or more users

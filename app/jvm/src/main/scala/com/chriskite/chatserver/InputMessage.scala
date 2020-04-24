@@ -1,4 +1,4 @@
-package com.martinsnyder.chatserver
+package com.chriskite.chatserver
 
 /*
  * Trait for any input operation that could come from the user

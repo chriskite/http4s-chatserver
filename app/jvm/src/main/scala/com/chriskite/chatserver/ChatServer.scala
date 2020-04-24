@@ -1,4 +1,4 @@
-package com.martinsnyder.chatserver
+package com.chriskite.chatserver
 
 import cats.effect._
 import cats.effect.concurrent.Ref

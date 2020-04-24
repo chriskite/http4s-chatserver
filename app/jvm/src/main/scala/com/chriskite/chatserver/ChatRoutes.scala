@@ -1,6 +1,5 @@
-package com.martinsnyder.chatserver
+package com.chriskite.chatserver
 
-import java.io.File
 import java.util.concurrent.Executors
 
 import cats.effect.concurrent.Ref
@@ -34,12 +33,12 @@ class ChatRoutes[F[_]: Sync: ContextShift](
       // Static resources
       case request @ GET -> Root =>
         StaticFile
-          .fromFile(new File("static/index.html"), blocker, Some(request))
+          .fromResource("/web/index.html", blocker, Some(request))
           .getOrElseF(NotFound())
 
-      case request @ GET -> Root / "chat.js" =>
+      case request @ GET -> Root / "app.js" =>
         StaticFile
-          .fromFile(new File("static/chat.js"), blocker, Some(request))
+          .fromResource("/chatserver.js", blocker, Some(request))
           .getOrElseF(NotFound())
 
       // Read the current state and format some stats in HTML

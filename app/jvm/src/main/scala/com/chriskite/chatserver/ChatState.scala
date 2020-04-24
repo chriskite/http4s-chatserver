@@ -1,4 +1,4 @@
-package com.martinsnyder.chatserver
+package com.chriskite.chatserver
 
 object ChatState {
   // Default constructor
