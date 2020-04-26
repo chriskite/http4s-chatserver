@@ -1,68 +1,11 @@
-/*
-val scalaV = "2.13.2"
-
-// Scala-Js frontend
-lazy val frontend =
-  (project in file("frontend"))
-    .enablePlugins(ScalaJSPlugin)
-    .settings(commonSettings: _*)
-    .settings(
-      scalaJSUseMainModuleInitializer := true,
-      testFrameworks += new TestFramework("utest.runner.Framework"),
-      libraryDependencies ++= Seq(
-        "com.lihaoyi"  %%% "utest"       % utestV % Test
-      )
-    )
-  .dependsOn(sharedJS)
-
-lazy val backend = project
-  .in(file("backend"))
-  .settings(commonSettings: _*)
-  .settings(
-    libraryDependencies ++= Seq(
-    ),
-    resourceGenerators in Compile += Def.task {
-      Seq((fastOptJS in Compile in frontend).value.data)
-    }.taskValue,
-    watchSources ++= (watchSources in frontend).value
-  )
-  .enablePlugins(BuildInfoPlugin)
-  .dependsOn(sharedJVM)
-
-lazy val shared =
-  (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)).in(file("shared")).settings(
-    scalaVersion := scalaV,
-    libraryDependencies += "com.lihaoyi" %%% "upickle" % upickleV
-  )
-
-lazy val sharedJVM = shared.jvm
-lazy val sharedJS = shared.js
-
-def commonSettings = Seq(
-  scalaVersion := scalaV,
-  scalacOptions ++= Seq(
-    "-deprecation",
-    "-encoding",
-    "UTF-8",
-    "-language:higherKinds",
-    "-language:postfixOps",
-    "-feature",
-    "-Xfatal-warnings"
-  ),
-  addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.10.3"),
-  addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1"),
-  buildInfoKeys := Seq[BuildInfoKey](name, version),
-  buildInfoPackage := "com.chriskite.chatserver",
-  turbo := true
-)
-
-   */
-
 // The values of the Scala objects in ./project are available in build.sbt
 scalaVersion in ThisBuild := ScalaConfig.version
 
 // Set the version for all projects in this build
 version in ThisBuild := BuildConfig.appVersion
+
+enablePlugins(ScalaJSPlugin)
+enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val root = project
   .in(file("."))
@@ -76,7 +19,7 @@ def inDevMode = sys.props.get("dev.mode").exists(value => value.equalsIgnoreCase
 scalacOptions in ThisBuild := ScalaConfig.compilerOptions(inDevMode).value
 
 // We can run this project by calling appJS/run and appJVM/run. Enter `projects` in SBT to see the name of all projects
-lazy val app = crossProject(JSPlatform, JVMPlatform)
+lazy val app = _root_.sbtcrossproject.CrossPlugin.autoImport.crossProject(JSPlatform, JVMPlatform)
   .in(file("./app"))
   .settings(
     name := BuildConfig.appName,
@@ -84,7 +27,7 @@ lazy val app = crossProject(JSPlatform, JVMPlatform)
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "appbuildinfo",
     addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.10.3"),
-    addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1")
+    addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1"),
   )
   .jvmSettings(
     libraryDependencies ++= Dependencies.server.value,
@@ -112,6 +55,8 @@ lazy val app = crossProject(JSPlatform, JVMPlatform)
     // SBT adds the JSApp of our application as the main method in the produced JavaScript
     scalaJSUseMainModuleInitializer := true
   )
+
+npmDependencies in Compile ++= Dependencies.client.npmDependencies.value
 
 /*
   We need to define the subprojects. Note that the names of these vals do not affect how you run the subprojects:

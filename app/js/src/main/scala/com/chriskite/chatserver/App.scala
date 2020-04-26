@@ -27,19 +27,19 @@ object App  {
     val chat = new WebSocket(getWebSocketUri(userName))
     val playground = dom.document.getElementById("playground")
     playground.innerHTML = s"Trying to join chat as '$userName'..."
-    chat.onopen = { (event: Event) ⇒
+    chat.onopen = { (event: Event) =>
       playground.insertBefore(p("Chat connection was successful!"), playground.firstChild)
       sendButton.disabled = false
 
       val messageField = dom.document.getElementById("message").asInstanceOf[HTMLInputElement]
       messageField.focus()
-      messageField.onkeypress = { (event: KeyboardEvent) ⇒
+      messageField.onkeypress = { (event: KeyboardEvent) =>
         if (event.keyCode == 13) {
           sendButton.click()
           event.preventDefault()
         }
       }
-      sendButton.onclick = { (event: Event) ⇒
+      sendButton.onclick = { (event: Event) =>
         chat.send(messageField.value)
         messageField.value = ""
         messageField.focus()
@@ -48,15 +48,15 @@ object App  {
 
       event
     }
-    chat.onerror = { (event: Event) ⇒
+    chat.onerror = { (event: Event) =>
       playground.insertBefore(p(s"Failed: code: ${event.asInstanceOf[ErrorEvent].colno}"), playground.firstChild)
       joinButton.disabled = false
       sendButton.disabled = true
     }
-    chat.onmessage = { (event: MessageEvent) ⇒
+    chat.onmessage = { (event: MessageEvent) =>
       writeToArea(event.data.toString)
     }
-    chat.onclose = { (event: Event) ⇒
+    chat.onclose = { (event: Event) =>
       playground.insertBefore(p("Connection to chat lost. You can try to rejoin manually."), playground.firstChild)
       joinButton.disabled = false
       sendButton.disabled = true
